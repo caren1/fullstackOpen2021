@@ -1,9 +1,9 @@
 import React from 'react'
 
-const Total = ({ parts }) => {
+const Total = ({ course }) => {
 
     let exercisesSum = 0;
-    parts.forEach(part => {
+    course.parts.forEach(part => {
         exercisesSum += part.exercises
     });
 
