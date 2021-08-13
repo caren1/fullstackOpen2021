@@ -18,13 +18,15 @@ const Statistics = ({ good, neutral, bad }) => {
     if (!good & !neutral & !bad) return <h3>Please provide the feedback first.</h3>
 
     return (
-        <div>
-            <Statistic text="Good" score={good}/>
-            <Statistic text="Neutral" score={neutral}/>
-            <Statistic text="Bad" score={bad}/>
-            <Statistic text="Average score" score={countAverage(good, neutral, bad)}/>
-            <Statistic text="Positive percentage" score={countPercentage(good)}/>
-        </div>
+        <table>
+            <tbody>
+                <Statistic text="Good" score={good}/>
+                <Statistic text="Neutral" score={neutral}/>
+                <Statistic text="Bad" score={bad}/>
+                <Statistic text="Average score" score={countAverage(good, neutral, bad)}/>
+                <Statistic text="Positive percentage" score={countPercentage(good)}/>
+            </tbody>
+        </table>
     )
 }
 
