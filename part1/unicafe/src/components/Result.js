@@ -1,9 +1,10 @@
 import React from 'react'
 
 const Result = ({ text, score }) => {
+
     return (
         <div>
-            {text} : {score}
+            {text} : {isNaN(score) ? 'There has to be a vote.' : score} {text === 'positive' && !isNaN(score) ? '%' : ''}
         </div>
     )
 }
