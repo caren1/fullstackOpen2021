@@ -16,6 +16,7 @@ const App = () => {
 
   const [points, setPoints] = useState(new Array(anecdotes.length).fill(0))
   const [selected, setSelected] = useState(0)
+  // const [mostVoted, setMostVoted] = useState();
 
   const selectNote = (anecdotes) => {
      setSelected(Math.floor(Math.random() * (anecdotes.length - 0 )) + 0);
@@ -27,13 +28,30 @@ const App = () => {
     setPoints(newPoints);
   }
 
+  let highestValue = Math.max.apply(0, points); 
+  let highestValueIndex = points.indexOf(highestValue);
+  
   return (
     <div style={{ textAlign: 'center', padding: '2em'}}>
-      <h1 style={{fontSize: '24px'}}>"{anecdotes[selected]}"</h1><span>currently with - {points[selected]} votes</span>
-      <br />
-      <button style={{padding: '1.1em 1em', fontSize:'18px', margin: '1em'}} onClick={() => selectNote(anecdotes)}>next anecdote</button>
-      <button style={{padding: '1.1em 1em', fontSize:'18px', margin: '1em'}} onClick={() => voteForAnecdote(selected)}>like 👍</button>
-    </div>
+      <div>
+        <h1>Anecdote of the day 😆</h1>
+        <h2 style={{fontSize: '22px'}}>"{anecdotes[selected]}"</h2><span>currently with - {points[selected]} votes</span>
+        <br />
+        <button style={{padding: '1.1em 1em', fontSize:'18px', margin: '1em'}} onClick={() => selectNote(anecdotes)}>next anecdote</button>
+        <button style={{padding: '1.1em 1em', fontSize:'18px', margin: '1em'}} onClick={() => voteForAnecdote(selected)}>like 👍</button>
+      </div>
+      <hr />
+      {highestValue !== 0 ?(
+        <>
+      <h3>Anecdote with the most votes 👍👍👍</h3>
+      <h2 style={{fontSize: '22px'}}>"{anecdotes[highestValueIndex]}"</h2><span>currently with - {points[highestValueIndex]} votes</span>
+      </>
+      ) : (
+        <>
+        <h2 style={{fontSize: '22px', padding: '1em'}}>Seems like no one has voted yet.. 🤔</h2>
+        </>
+      )}
+      </div>
   )
 }
 
