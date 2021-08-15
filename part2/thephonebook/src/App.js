@@ -1,4 +1,7 @@
 import React, { useState } from 'react'
+import Filter from './components/Filter'
+import PersonForm from './components/PersonForm'
+import PersonList from './components/PersonList'
 
 const App = () => {
   const [ persons, setPersons ] = useState([
@@ -13,7 +16,6 @@ const App = () => {
 
   const onNewPersonAdd =(event) => {
     event.preventDefault();
-
     const existingPerson = persons.find((person) => person.name.toLowerCase() === newName.toLowerCase())
 
     if (!existingPerson) {
@@ -26,30 +28,26 @@ const App = () => {
     setPhoneNumber('');
   }
 
-  const filteredPersons = filter ? persons.filter((person) => person.name.toLowerCase().includes(filter.toLowerCase())) : persons;
+  const onFilterChange = (event) => setFilter(event.target.value);
+  const onNameChange = (event) => setNewName(event.target.value);
+  const onPhoneChange = (event) => setPhoneNumber(event.target.value);
+  const personsToShow = filter ? persons.filter((person) => person.name.toLowerCase().includes(filter.toLowerCase())) : persons;
 
   return (
     <div>
       <h2>Phonebook</h2>
-      <div>
-          Filter shown with: <input value={filter} onChange={(event) => setFilter(event.target.value)}/>
-        </div>
+      <Filter filter={filter} filterChangeHandler={onFilterChange}/>
       <hr />
-      <form onSubmit={onNewPersonAdd}>
-        <div>
-          name: <input value={newName} onChange={(event) => setNewName(event.target.value)}/>
-        </div>
-        <div>
-          phone: <input value={phoneNumber} onChange={(event) => setPhoneNumber(event.target.value)} minLength={3}/>
-        </div>
-        <div>
-          <button type="submit">add</button>
-        </div>
-      </form>
+      <h3>Add a new person to phonebook: </h3>
+      <PersonForm 
+        personAddHandler={onNewPersonAdd} 
+        newName={newName} 
+        phoneNumber={phoneNumber} 
+        nameChangeHandler={onNameChange} 
+        phoneChangeHandler={onPhoneChange}/>
+      <hr />
       <h2>Numbers</h2>
-      {filteredPersons.map((person) => (
-        <p key={person.id}>{person.name} - {person.number}</p>
-      ))}
+      <PersonList persons={personsToShow}/>
     </div>
   )
 }
