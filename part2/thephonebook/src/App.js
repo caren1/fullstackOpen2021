@@ -6,8 +6,15 @@ const App = () => {
 
   const onNewPersonAdd =(event) => {
     event.preventDefault();
-    const newPersons = [...persons, { id: persons.length + 1,name: newName }]
-    setPersons(newPersons);
+
+    const existingPerson = persons.find((person) => person.name.toLowerCase() === newName.toLowerCase())
+
+    if (!existingPerson) {
+      const newPersons = [...persons, { id: persons.length + 1,name: newName }]
+      setPersons(newPersons);
+    } else {
+      alert(`${newName} is already added to phonebook.. 😏`)
+    }
     setNewName('');
   }
 
