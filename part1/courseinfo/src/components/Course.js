@@ -6,6 +6,7 @@ import Total from './Total'
 const Course = ({ course }) => {
     return (
         <div>
+            <hr />
             <Header course={course}/>
             <Content course={course}/>
             <Total course={course}/>
