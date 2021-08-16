@@ -1,6 +1,9 @@
 import React from 'react'
 
 const PersonList = ({ persons }) => {
+
+  if (!persons) return <h3>Persons list is currently empty.</h3>
+
     return (
         <>
         {persons.map((person) => (
