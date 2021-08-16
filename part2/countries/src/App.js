@@ -9,16 +9,20 @@ function App() {
   const [ countries, setCountries ] = useState([]);
   const [ filter, setFilter ] = useState('');
   const [ filteredCountries, setFilteredCountries ] = useState([]);
+  const [ countryDetails, setCountryDetails ] = useState();
 
   const onFilterChange = (event) => {
     setFilter(event.target.value)
+  }
+
+  const onShowDetails = (country) => {
+    setCountryDetails(country);
   }
 
   useEffect(() => {
     axios
     .get(baseUrl)
     .then((res) => {
-  
       setCountries(res.data);
     })
   }, [])
@@ -36,7 +40,7 @@ function App() {
       filterResults = <Country country={filteredCountries[0]}/>
     } else if (filteredCountries.length <= 10 && filteredCountries.length >= 1){
       filterResults = filteredCountries.map((country) => (
-        <li key={country.name}>{country.name}</li>
+        <li key={country.name}>{country.name} <span><button onClick={() => onShowDetails(country)}>show</button></span></li>
       ))
     } else if (filteredCountries.length === 0){
       filterResults = <p>Unknown country, try something else.</p>
@@ -45,6 +49,8 @@ function App() {
 
   return (
     <div className="App">
+      {!countryDetails ? (
+        <>
       <Filter filter={filter} filterChangeHandler={onFilterChange}/>
       <hr />
       {!filter 
@@ -53,6 +59,10 @@ function App() {
         <ul>
           {filterResults}
         </ul>
+      )}
+      </>
+      ) : (
+        <Country country={countryDetails}/>
       )}
     </div>
   );
