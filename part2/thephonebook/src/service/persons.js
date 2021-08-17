@@ -11,4 +11,15 @@ const getAllPersons = () => {
      return request.then((response) => response.data);
  }
 
-export default { getAllPersons, savePerson }
+ const removePerson = (id) => {
+     const request = axios.delete(`${baseUrl}/${id}`);
+     return request.then((response) => console.log(response.data));
+ }
+
+ const updatePerson = (id, updatedPerson) => {
+     const request = axios.put(`${baseUrl}/${id}`, updatedPerson);
+     return request.then((response) => response.data);
+ }
+
+// eslint-disable-next-line import/no-anonymous-default-export
+export default { getAllPersons, savePerson, removePerson, updatePerson }
