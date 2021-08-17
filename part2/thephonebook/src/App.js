@@ -4,6 +4,7 @@ import PersonForm from './components/PersonForm'
 import PersonList from './components/PersonList'
 
 import axios from 'axios';
+import personService from './service/persons'
 
 const App = () => {
   const [ persons, setPersons ] = useState([
@@ -14,10 +15,10 @@ const App = () => {
   const [ filter, setFilter ] = useState('');
 
   useEffect(() => {
-    axios
-    .get('http://localhost:3001/persons')
-    .then(res => {
-      setPersons(res.data);
+    personService
+    .getAllPersons()
+    .then((returnedPersons) => {
+      setPersons(returnedPersons);
     })
   }, [])
 
@@ -26,8 +27,12 @@ const App = () => {
     const existingPerson = persons.find((person) => person.name.toLowerCase() === newName.toLowerCase())
 
     if (!existingPerson) {
-      const newPersons = [...persons, { id: persons.length + 1,name: newName, number: phoneNumber }]
-      setPersons(newPersons);
+      const newPerson = { id: persons.length + 1, name: newName, number: phoneNumber }
+      personService
+      .savePerson(newPerson)
+      .then((returnedPerson) => {
+        setPersons(persons.concat(returnedPerson))
+      })
     } else {
       alert(`${newName} is already added to phonebook.. 😏`)
     }

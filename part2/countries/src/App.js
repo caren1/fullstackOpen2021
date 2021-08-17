@@ -50,7 +50,7 @@ function App() {
   return (
     <div className="App">
       {!countryDetails ? (
-        <>
+      <>
       <Filter filter={filter} filterChangeHandler={onFilterChange}/>
       <hr />
       {!filter 
@@ -61,9 +61,7 @@ function App() {
         </ul>
       )}
       </>
-      ) : (
-        <Country country={countryDetails}/>
-      )}
+      ) : (<Country country={countryDetails}/>)}
     </div>
   );
 }

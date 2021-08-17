@@ -2,9 +2,7 @@ import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 
 const Country = ({ country }) => {
-    console.log("halo?",country);
     const {name, capital, population, flag, languages } = country;
-    // console.log(languages);
     const API_KEY = process.env.REACT_APP_API_KEY
 
     const [ countryWeather, setCountryWeather ] = useState();
