@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import Filter from './components/Filter'
+import Notification from './components/Notification'
 import PersonForm from './components/PersonForm'
 import PersonList from './components/PersonList'
 
@@ -10,6 +11,7 @@ const App = () => {
   const [ newName, setNewName ] = useState('');
   const [ phoneNumber, setPhoneNumber ] = useState('');
   const [ filter, setFilter ] = useState('');
+  const [ message, setMessage ] = useState(null);
 
   useEffect(() => {
     personService
@@ -28,7 +30,11 @@ const App = () => {
       personService
       .savePerson(newPerson)
       .then((returnedPerson) => {
+        setOperationMessage(`Successfully added ${returnedPerson.name}`, 'success', 3000);
         setPersons(persons.concat(returnedPerson))
+      })
+      .catch((error) => {
+        setOperationMessage(`Couldn't add  ${newName.name}`, 'error', 3000);
       })
     } else {
       if (window.confirm(`${newName} is already added to phonebook.. 😏 Do you want to replace the old number with a new one?`)){
@@ -36,7 +42,11 @@ const App = () => {
         personService
         .updatePerson(existingPerson.id, updatedPerson)
         .then((returnedPerson) => {
+          setOperationMessage(`Successfully updated ${returnedPerson.name}'s number`, 'success', 3000);
           setPersons(persons.map((person) => person.id !== returnedPerson.id ? person : returnedPerson))
+        })
+        .catch((error) => {
+          setOperationMessage(`Couldnt update ${existingPerson.name}'s number`, 'error', 3000);
         })
       }
     }
@@ -52,11 +62,12 @@ const App = () => {
       .removePerson(id)
       .then(() => {
         const filteredPersons = persons.filter((person) => person.id !== id);
-        // console.log(filteredPersons);
+        setOperationMessage(`Successfully deleted ${personToDelete.name}`, 'success', 3000);
         setPersons(filteredPersons);
       })
       .catch((error) => {
         console.log(`Couldnt delete the specific person with id ${id}`, error);
+        setOperationMessage(`Couldnt delete the specific person with id ${id}`, 'error', 3000);
       })
     }
   }
@@ -65,10 +76,18 @@ const App = () => {
   const onNameChange = (event) => setNewName(event.target.value);
   const onPhoneChange = (event) => setPhoneNumber(event.target.value);
   const personsToShow = filter ? persons.filter((person) => person.name.toLowerCase().includes(filter.toLowerCase())) : persons;
+  const setOperationMessage = (message, type, timer) => {
+    const operationMessage = { message: message, type: type }
+    setMessage(operationMessage)
+    setTimeout(() => {
+      setMessage(null);
+    }, timer);
+  }
 
   return (
     <div>
       <h2>Phonebook</h2>
+      {message && <Notification message={message}/>}
       <Filter filter={filter} filterChangeHandler={onFilterChange}/>
       <hr />
       <h3>Add a new person to phonebook: </h3>
