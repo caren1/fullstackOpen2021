@@ -34,10 +34,20 @@ app.get('/info', (request, response) => {
     const currentDate = new Date();
     response.send(`
     <div>
-    <h1>Phonebook has info for ${persons.length} persons</h1>
-    <p>${currentDate}</p>
+        h1>Phonebook has info for ${persons.length} persons</h1>
+        <p>${currentDate}</p>
     </div>
     `)
+})
+
+app.get('/api/persons/:id', (request, response) => {
+    const requestId = Number(request.params.id);
+    const person = persons.find((person) => person.id === requestId);
+    if (person) {
+        response.json(person);
+    } else {
+        return response.status(404).end();
+    }
 })
 
 const PORT = 3001;
