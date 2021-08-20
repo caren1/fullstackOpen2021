@@ -31,7 +31,15 @@ const generateId = () => {
       ? Math.max(...persons.map(n => n.id))
       : 0
     return maxId + 1
-  }
+}
+
+const isNameUnique = (name) => {
+    const existingName = persons.find((person) => person.name === name);
+    if (existingName){
+        return false;
+    }
+    return true;
+}
 
 app.get('/api/persons', (request, response) => {
     response.json(persons);
@@ -70,7 +78,11 @@ app.post('/api/persons', (request, response) => {
         return response.status(400).json({
             error: 'One of the required fields is missing.'
         })
-    } 
+    } else if (!isNameUnique(body.name)){
+        return response.status(400).json({
+            error: 'Name must be unique.'
+        })
+    }
         const person = {
             id: generateId(),
             name: body.name,
