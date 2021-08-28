@@ -34,56 +34,54 @@ const unknownEndpointHandler = (request, response) => {
 const errorHandler = (error, request, response, next) => {
     console.error(error.message);
 
-    if (error.name === 'CastError') {
+    if (error.name === 'CastError' && error.kind === 'ObjectId') {
         return response.status(400).send({ error: "Seems like there is malformatted id." })
+    } else if (error.name === 'ValidationError'){
+        return response.status(400).json({ error: error.message})
     }
 
     next(error);
 }
 
-app.use(errorHandler);
-
-let persons = [];
-
-const generateId = () => {
-    const maxId = persons.length > 0
-      ? Math.max(...persons.map(n => n.id))
-      : 0
-    return maxId + 1
-}
-
-const isNameUnique = (name) => {
-    const existingName = persons.find((person) => person.name === name);
-    if (existingName){
-        return false;
-    }
-    return true;
-}
-
-app.get('/api/persons', (request, response) => {
+app.get('/api/persons', (request, response, next) => {
     Person.find({}).then((persons) => {
         response.json(persons);
     })
+    .catch((error) => next(error));
 })
 
 app.get('/info', (request, response) => {
     const currentDate = new Date();
-    response.send(`
-    <div>
-        h1>Phonebook has info for ${persons.length} persons</h1>
-        <p>${currentDate}</p>
-    </div>
-    `)
+    const persons = Person.find({}).then((persons) => {
+       if (persons){
+        response.send(`
+        <div>
+            <h1>Phonebook has info for ${persons.length} persons</h1>
+            <p>${currentDate}</p>
+        </div>
+        `)
+       } else {
+        response.send(`
+        <div>
+            <h1>There are currently no entries for the phonebook.</h1>
+            <p>${currentDate}</p>
+        </div>
+        `)
+       }
+    })
+    .catch((error) => next(error));
 })
 
-app.get('/api/persons/:id', (request, response) => {
-    const requestId = Number(request.params.id);
-    const person = persons.find((person) => person.id === requestId);
-    if (person) {
-        response.json(person);
-    } else {
-        return response.status(404).end();
-    }
+app.get('/api/persons/:id', (request, response, next) => {
+    Person.findById(request.params.id)
+    .then((person) => {
+        if (person) {
+            response.json(person);
+        }else{
+            response.status(404).send({ error: 'Person not found'})
+        }
+    })
+    .catch((error) => next(error));
 })
 
 app.delete('/api/persons/:id', (request, response, next) => {
@@ -131,6 +129,7 @@ app.put('/api/persons/:id', (request, response, next) => {
 
 
 app.use(unknownEndpointHandler);
+app.use(errorHandler);
 
 const PORT = process.env.PORT;
 app.listen(PORT, () => {
