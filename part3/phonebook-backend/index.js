@@ -1,5 +1,6 @@
 const express = require('express');
 const app = express();
+app.use(express.static('build'));
 const morgan = require('morgan');
 const cors = require('cors');
 
@@ -70,9 +71,15 @@ app.get('/api/persons/:id', (request, response) => {
 })
 
 app.delete('/api/persons/:id', (request, response) => {
-    const requestId = Number(request.params.id);
-    persons = persons.filter((person) => person.id !== requestId);
-    response.status(204).end();
+    // const requestId = Number(request.params.id);
+    // persons = persons.filter((person) => person.id !== requestId);
+    Person.findByIdAndDelete(request.params.id)
+    .then((result) => {
+        response.status(204).end();
+    })
+    .catch((error) => {
+        console.log(error);
+    })
 })
 
 app.post('/api/persons', (request, response) => {
@@ -87,14 +94,23 @@ app.post('/api/persons', (request, response) => {
             error: 'Name must be unique.'
         })
     }
-        const person = {
-            id: generateId(),
+        // const person = {
+        //     id: generateId(),
+        //     name: body.name,
+        //     number: body.number
+        // }
+
+        const person = new Person ({
             name: body.name,
             number: body.number
-        }
+        })
 
-        persons = persons.concat(person);
-        response.json(person);   
+        // persons = persons.concat(person);
+        person.save()
+        .then((savedPerson) => {
+            response.json(savedPerson);
+        })
+        // response.json(person);   
 })
 
 const PORT = process.env.PORT;
