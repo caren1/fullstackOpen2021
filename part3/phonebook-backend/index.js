@@ -52,7 +52,7 @@ app.get('/api/persons', (request, response, next) => {
 
 app.get('/info', (request, response) => {
     const currentDate = new Date();
-    const persons = Person.find({}).then((persons) => {
+    Person.find({}).then((persons) => {
        if (persons){
         response.send(`
         <div>
@@ -92,7 +92,7 @@ app.delete('/api/persons/:id', (request, response, next) => {
     .catch((error) => next(error))
 })
 
-app.post('/api/persons', (request, response) => {
+app.post('/api/persons', (request, response, next) => {
     const body = request.body;
 
     if (!body.name || !body.number) {
@@ -126,7 +126,6 @@ app.put('/api/persons/:id', (request, response, next) => {
     })
     .catch((error) => next(error))
 })
-
 
 app.use(unknownEndpointHandler);
 app.use(errorHandler);
