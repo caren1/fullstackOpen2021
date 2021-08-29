@@ -18,6 +18,10 @@ const App = () => {
     .getAllPersons()
     .then((returnedPersons) => {
       setPersons(returnedPersons);
+      setOperationMessage(`Successfully loaded ${returnedPersons.length}`, 'success', 3000);
+    })
+    .catch((error) => {
+      setOperationMessage(`Couldn't get persons, ${error.response.data.error}`, 'error', 3000);
     })
   }, [])
 
@@ -34,7 +38,7 @@ const App = () => {
         setPersons(persons.concat(returnedPerson))
       })
       .catch((error) => {
-        setOperationMessage(`Couldn't add  ${newName.name}`, 'error', 3000);
+        setOperationMessage(`Couldn't add  ${newName.name}, ${error.response.data.error}`, 'error', 3000);
       })
     } else {
       if (window.confirm(`${newName} is already added to phonebook.. 😏 Do you want to replace the old number with a new one?`)){
@@ -46,7 +50,7 @@ const App = () => {
           setPersons(persons.map((person) => person.id !== returnedPerson.id ? person : returnedPerson))
         })
         .catch((error) => {
-          setOperationMessage(`Couldnt update ${existingPerson.name}'s number`, 'error', 3000);
+          setOperationMessage(`Couldnt update ${existingPerson.name}, ${error.response.data.error}'s number`, 'error', 3000);
         })
       }
     }
@@ -66,8 +70,8 @@ const App = () => {
         setPersons(filteredPersons);
       })
       .catch((error) => {
-        console.log(`Couldnt delete the specific person with id ${id}`, error);
-        setOperationMessage(`Couldnt delete the specific person with id ${id}`, 'error', 3000);
+        // console.log(`Couldnt delete the specific person with id ${id}`, error);
+        setOperationMessage(`Couldnt delete the specific person with id ${id}, ${error.response.data.error}`, 'error', 3000);
       })
     }
   }
