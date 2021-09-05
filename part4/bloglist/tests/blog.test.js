@@ -116,6 +116,25 @@ describe('API TESTING', () => {
     const ids = response.body.map(blog => blog.id);
     expect(ids).toBeDefined();
   });
+  test('HTTP POST, adds a new blog', async () => {
+    const newBlog = {
+      title: 'Testing is fun',
+      author: 'wojt',
+      url: 'www.test.com',
+      likes: 11
+    };
+    await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .expect(201)
+      .expect('Content-Type', /application\/json/);
+
+    const response = await api.get('/api/blogs');
+    expect(response.body).toHaveLength(initialBlogs.length + 1);
+    const titles = response.body.map(b => b.title);
+    expect(titles).toContain('Testing is fun');
+
+  });
 });
 
 afterAll(() => {
