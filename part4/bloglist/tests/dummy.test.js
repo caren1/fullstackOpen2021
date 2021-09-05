@@ -1,9 +1,9 @@
 const { expect } = require('@jest/globals');
-const listhelper = require('../utils/list_helper')
+const listhelper = require('../utils/list_helper');
 
 test('dummy returns one', () => {
-    const blogs = [];
+  const blogs = [];
 
-    const result = listhelper.dummy(blogs);
-    expect(result).toBe(1);
-})
+  const result = listhelper.dummy(blogs);
+  expect(result).toBe(1);
+});
