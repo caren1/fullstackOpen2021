@@ -2,6 +2,7 @@ const bloghelper = require('../utils/list_helper');
 const app = require('../app');
 const supertest = require('supertest');
 const Blog = require('../models/blogs');
+const mongoose = require('mongoose');
 
 const initialBlogs = [
   {
@@ -110,4 +111,13 @@ describe('API TESTING', () => {
 
     expect(response.body).toHaveLength(2);
   });
+  test('HTTP POST, returned object has the property id instead of _id', async () => {
+    const response = await api.get('/api/blogs');
+    const ids = response.body.map(blog => blog.id);
+    expect(ids).toBeDefined();
+  });
 });
+
+afterAll(() => {
+  mongoose.connection.close();
+})
