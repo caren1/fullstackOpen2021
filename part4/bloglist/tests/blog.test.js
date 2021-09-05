@@ -119,7 +119,7 @@ describe('API TESTING', () => {
   test('HTTP POST, adds a new blog', async () => {
     const newBlog = {
       title: 'Testing is fun',
-      author: 'wojt',
+      author: 'wojteya',
       url: 'www.test.com',
       likes: 11
     };
@@ -133,7 +133,35 @@ describe('API TESTING', () => {
     expect(response.body).toHaveLength(initialBlogs.length + 1);
     const titles = response.body.map(b => b.title);
     expect(titles).toContain('Testing is fun');
+  });
 
+  test('HTTP POST, has the request likes property', async () => {
+    const newBlog = {
+      title: 'This blog will not have likes',
+      author: 'Lacking Like',
+      url: 'www.nolikes.com'
+    };
+
+    const response = await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .expect(201)
+      .expect('Content-Type', /application\/json/);
+
+    expect(response.body.likes).toBeFalsy();
+  });
+
+  test('HTTP POST, blog has title and url missing', async () => {
+    const newBlog = {
+      author: 'Missing TitleAndUrl',
+      likes: 30
+    };
+
+    await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .expect(400)
+      .expect('Content-Type', /application\/json/);
   });
 });
 

@@ -9,10 +9,10 @@ blogRouter.get('/', async (request, response) => {
     });
 });
 
-blogRouter.post('/', (request, response) => {
+blogRouter.post('/', async (request, response) => {
   const blog = new Blog(request.body);
 
-  blog
+  await blog
     .save()
     .then(result => {
       response.status(201).json(result);
