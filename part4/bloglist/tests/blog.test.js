@@ -1,25 +1,19 @@
-const bloghelper = require('../utils/list_helper');
+const listhelper = require('../utils/list_helper');
+const bloghelper = require('./blog_helper');
 const app = require('../app');
 const supertest = require('supertest');
 const Blog = require('../models/blogs');
 const mongoose = require('mongoose');
 
-const initialBlogs = [
-  {
-    title: 'Hello its your blog here',
-    author: 'Wojciech Czarnocki',
-    url: 'www.swietone.pl',
-    likes: 20
-  },
-  {
-    title: 'Blog2',
-    author: 'Agnieszka',
-    url: 'www.url.com',
-    likes: 50,
-  }
-];
-
 const api = supertest(app);
+
+beforeEach(async () => {
+  await Blog.deleteMany({});
+  for (let blog of bloghelper.initialBlogs) {
+    let blogObject = new Blog(blog);
+    await blogObject.save();
+  }
+});
 
 describe('total likes', () => {
   const listWithOneBlog = [
@@ -34,7 +28,7 @@ describe('total likes', () => {
   ];
 
   test('when there is only one blog, total likes === likes of that blog', () => {
-    const result = bloghelper.totalLikes(listWithOneBlog);
+    const result = listhelper.totalLikes(listWithOneBlog);
     expect(result).toBe(5);
   });
 });
@@ -92,18 +86,13 @@ describe('favorite blog', () => {
   ];
 
   test('the fans favorite', () => {
-    const result = bloghelper.mostLiked(blogs);
+    const result = listhelper.mostLiked(blogs);
     expect(result).toEqual(blogs[2]);
   });
 });
 
 describe('API TESTING', () => {
-  beforeEach(async () => {
-    await Blog.deleteMany({});
-    const blogObjects = initialBlogs.map((blog) => new Blog(blog));
-    const promisesBlogsArray = blogObjects.map(b => b.save());
-    await Promise.all(promisesBlogsArray);
-  });
+
   test('HTTP GET, returns appropriate number of entries', async () => {
     const response = await api.get('/api/blogs')
       .expect(200)
@@ -126,11 +115,11 @@ describe('API TESTING', () => {
     await api
       .post('/api/blogs')
       .send(newBlog)
-      .expect(201)
+      .expect(200)
       .expect('Content-Type', /application\/json/);
 
     const response = await api.get('/api/blogs');
-    expect(response.body).toHaveLength(initialBlogs.length + 1);
+    expect(response.body).toHaveLength(bloghelper.initialBlogs.length + 1);
     const titles = response.body.map(b => b.title);
     expect(titles).toContain('Testing is fun');
   });
@@ -145,7 +134,7 @@ describe('API TESTING', () => {
     const response = await api
       .post('/api/blogs')
       .send(newBlog)
-      .expect(201)
+      .expect(200)
       .expect('Content-Type', /application\/json/);
 
     expect(response.body.likes).toBeFalsy();
@@ -165,6 +154,53 @@ describe('API TESTING', () => {
   });
 });
 
+describe('DELETE OPERATIONS', () => {
+
+  test('blog with proper id, might be retrieved', async () => {
+    const blogsAtStart = await bloghelper.blogsInDb();
+    console.log(blogsAtStart);
+    const blogToBeRetrieved = blogsAtStart[0];
+
+    const response = await api
+      .get(`/api/blogs/${blogToBeRetrieved.id}`)
+      .expect(200);
+
+    expect(response.body.title).toContain('Hello its your blog here');
+    expect(response.body).toEqual(blogToBeRetrieved);
+  });
+
+  test('blog with proper id, might be deleted - status 204', async () => {
+    const blogsAtStart = await bloghelper.blogsInDb();
+    const blogToBeDeleted = blogsAtStart[0];
+
+    await api
+      .delete(`/api/blogs/${blogToBeDeleted.id}`)
+      .expect(204);
+
+    const blogsAtEnd = await bloghelper.blogsInDb();
+    expect(blogsAtEnd).toHaveLength(bloghelper.initialBlogs.length - 1);
+
+    const blogTitles = blogsAtEnd.map((blog) => blog.title);
+    expect(blogTitles).not.toContain(blogToBeDeleted.title);
+  });
+
+  test('blog with invalid id, returns 400', async () => {
+    const id = '5a3d5da59070081a82a3445';
+    await api
+      .get(`/api/blogs/${id}`)
+      .expect(400);
+  });
+
+  test('fails with statuscode 404 if note does not exist', async () => {
+    const validNonexistingId = await bloghelper.nonExistingId();
+    console.log(validNonexistingId);
+
+    await api
+      .get(`/api/notes/${validNonexistingId}`)
+      .expect(404);
+  });
+});
+
 afterAll(() => {
   mongoose.connection.close();
-})
+});
