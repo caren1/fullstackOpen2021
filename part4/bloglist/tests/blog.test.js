@@ -158,7 +158,7 @@ describe('DELETE OPERATIONS', () => {
 
   test('blog with proper id, might be retrieved', async () => {
     const blogsAtStart = await bloghelper.blogsInDb();
-    console.log(blogsAtStart);
+    // console.log(blogsAtStart);
     const blogToBeRetrieved = blogsAtStart[0];
 
     const response = await api
@@ -191,13 +191,38 @@ describe('DELETE OPERATIONS', () => {
       .expect(400);
   });
 
-  test('fails with statuscode 404 if note does not exist', async () => {
+  test('fails with statuscode 404 if blog does not exist', async () => {
     const validNonexistingId = await bloghelper.nonExistingId();
-    console.log(validNonexistingId);
+    // console.log(validNonexistingId);
 
     await api
-      .get(`/api/notes/${validNonexistingId}`)
+      .get(`/api/blogs/${validNonexistingId}`)
       .expect(404);
+  });
+});
+
+describe('HTTP PUT', () => {
+  test('http put updates the specific blog', async () => {
+    const blogsAtStart = await bloghelper.blogsInDb();
+    const blogToUpdate = blogsAtStart[0];
+
+    const newBlog = {
+      ...blogToUpdate,
+      title: 'It actually works',
+      likes: 800
+    };
+
+    await api
+      .put(`/api/blogs/${blogToUpdate.id}`)
+      .send(newBlog)
+      .expect(200);
+
+    const blogsAtEnd = await bloghelper.blogsInDb();
+    const titles = blogsAtEnd.map((blog) => blog.title);
+    const likes = blogsAtEnd.map((blog) => blog.likes);
+
+    expect(titles).toContain('It actually works');
+    expect(likes[0]).toEqual(800);
   });
 });
 
