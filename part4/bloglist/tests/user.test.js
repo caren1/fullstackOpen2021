@@ -13,7 +13,7 @@ describe('When there is initially one user in the database',  () => {
 
     const passwordHash = await bcrypt.hash('password', 10);
     const user = new User({ username: 'wojtek', passwordHash });
-    user.save();
+    await user.save();
   });
 
   test('user can be created with fresh username', async () => {
@@ -39,7 +39,7 @@ describe('When there is initially one user in the database',  () => {
   });
 
   test('user cannot be created when username already exists', async () => {
-    const usersAtStart = userHelper.usersInDb();
+    const usersAtStart = await userHelper.usersInDb();
     const newUser = {
       username: 'wojtek',
       name: 'Wojciech C',
@@ -57,4 +57,66 @@ describe('When there is initially one user in the database',  () => {
     const usersAtEnd = await userHelper.usersInDb();
     expect(usersAtEnd).toHaveLength(usersAtStart.length);
   });
+
+  test('user cannot be created when username is less than 3 chars', async () => {
+    const usersAtStart = await userHelper.usersInDb();
+    const newUser = {
+      username: 'wo',
+      name: 'Wojciech C',
+      password: 'hellothere'
+    };
+
+    const result = await api
+      .post('/api/users')
+      .send(newUser)
+      .expect(400)
+      .expect('Content-Type', /application\/json/);
+
+    expect(result.body.error).toContain('');
+
+    const usersAtEnd = await userHelper.usersInDb();
+    expect(usersAtEnd).toHaveLength(usersAtStart.length);
+  });
+
+  test('user cannot be created when password is less than 3 chars', async () => {
+    const usersAtStart = await userHelper.usersInDb();
+    const newUser = {
+      username: 'wojtekasd',
+      name: 'Wojciech C',
+      password: 'he'
+    };
+
+    const result = await api
+      .post('/api/users')
+      .send(newUser)
+      .expect(400)
+      .expect('Content-Type', /application\/json/);
+
+    expect(result.body.error).toContain('at least 3 characters');
+
+    const usersAtEnd = await userHelper.usersInDb();
+    expect(usersAtEnd).toHaveLength(usersAtStart.length);
+  });
+
+  test('user cannot be created when username and password is empty', async () => {
+    const usersAtStart = await userHelper.usersInDb();
+    const newUser = {
+      password: 'hellothere'
+    };
+
+    const result = await api
+      .post('/api/users')
+      .send(newUser)
+      .expect(400)
+      .expect('Content-Type', /application\/json/);
+
+    expect(result.body.error).toContain('username or password is not missing');
+
+    const usersAtEnd = await userHelper.usersInDb();
+    expect(usersAtEnd).toHaveLength(usersAtStart.length);
+  });
+});
+
+afterAll(() => {
+  mongoose.connection.close();
 });

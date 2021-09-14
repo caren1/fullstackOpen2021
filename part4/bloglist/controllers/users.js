@@ -18,6 +18,12 @@ usersRouter.get('/:id', async (request, response) => {
 
 usersRouter.post('/', async (request, response) => {
     const body = request.body;
+
+    if (!body.username || !body.password){
+        response.status(400).json({ error: 'Couldnt create a user with given credentials - check if username or password is not missing' })
+    } else if (body.password.length < 3){
+        response.status(400).json({ error: 'Password has to be at least 3 characters length.'})
+    }
     
     const saltingRounds = 10;
     const passwordHash = await bcryptjs.hash(body.password, saltingRounds);
