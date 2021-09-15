@@ -4,14 +4,6 @@ const User = require('../models/users');
 const jwt = require('jsonwebtoken');
 const config = require('../utils/config');
 
-const getTokenFrom = request => {
-  const authorization = request.get('authorization');
-  if (authorization && authorization.toLowerCase().startsWith('bearer ')) {
-    return authorization.substring(7);
-  }
-  return null;
-}
-
 blogRouter.get('/', async (request, response) => {
   const blogs = await Blog.find({}).populate('user', { username: 1,id: 1 });
   response.json(blogs.map((blog) => blog.toJSON()));
@@ -51,8 +43,21 @@ blogRouter.post('/', async (request, response) => {
 });
 
 blogRouter.delete('/:id', async (request, response) => {
-  await Blog.findByIdAndRemove(request.params.id);
-  response.status(204).end();
+  const token = request.token;
+  const decodedToken = jwt.verify(token, config.SECRET);
+  const user = await User.findById(decodedToken.id);
+  const blog = await Blog.findById(request.params.id);
+
+  if (!blog){
+    response.status(400).json({ error: 'There is no blog for given id.' });
+  }
+
+  if ((token && blog) && (blog.user.toString() === user.id.toString())) {
+    await Blog.findByIdAndRemove(request.params.id);
+    response.status(204).end();
+  } else {
+    response.status(201).json({ error: 'Token is missing or invalid.' });
+  }
 });
 
 blogRouter.put('/:id', async (request, response) => {
