@@ -114,6 +114,7 @@ describe('API TESTING', () => {
     };
     await api
       .post('/api/blogs')
+      .set('Authorization', 'bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IldvamNpZWNoQyIsImlkIjoiNjE0MWU2OWYwZjgxZTg4NTRmOTkxYTgzIiwiaWF0IjoxNjMxNzE2NDk2fQ.6_8R9WQmynwkSmAlaekwOaO_69qi8MvpwZma5n8LuvE')
       .send(newBlog)
       .expect(200)
       .expect('Content-Type', /application\/json/);
@@ -133,6 +134,7 @@ describe('API TESTING', () => {
 
     const response = await api
       .post('/api/blogs')
+      .set('Authorization', 'bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IldvamNpZWNoQyIsImlkIjoiNjE0MWU2OWYwZjgxZTg4NTRmOTkxYTgzIiwiaWF0IjoxNjMxNzA5NTEzfQ.vgMTQKZvMHApQnlmGCS9OZAL0aDiE9m5_z0c-tNliUI')
       .send(newBlog)
       .expect(200)
       .expect('Content-Type', /application\/json/);
@@ -148,8 +150,9 @@ describe('API TESTING', () => {
 
     await api
       .post('/api/blogs')
-      .send(newBlog)
+      .set('Authorization', 'bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IldvamNpZWNoQyIsImlkIjoiNjE0MWU2OWYwZjgxZTg4NTRmOTkxYTgzIiwiaWF0IjoxNjMxNzA5NTEzfQ.vgMTQKZvMHApQnlmGCS9OZAL0aDiE9m5_z0c-tNliUI')
       .expect(400)
+      .send(newBlog)
       .expect('Content-Type', /application\/json/);
   });
 });
@@ -163,6 +166,7 @@ describe('DELETE OPERATIONS', () => {
 
     const response = await api
       .get(`/api/blogs/${blogToBeRetrieved.id}`)
+      .set('Authorization', 'bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IldvamNpZWNoQyIsImlkIjoiNjE0MWU2OWYwZjgxZTg4NTRmOTkxYTgzIiwiaWF0IjoxNjMxNzA5NTEzfQ.vgMTQKZvMHApQnlmGCS9OZAL0aDiE9m5_z0c-tNliUI')
       .expect(200);
 
     expect(response.body.title).toContain('Hello its your blog here');
@@ -175,6 +179,7 @@ describe('DELETE OPERATIONS', () => {
 
     await api
       .delete(`/api/blogs/${blogToBeDeleted.id}`)
+      .set('Authorization', 'bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IldvamNpZWNoQyIsImlkIjoiNjE0MWU2OWYwZjgxZTg4NTRmOTkxYTgzIiwiaWF0IjoxNjMxNzA5NTEzfQ.vgMTQKZvMHApQnlmGCS9OZAL0aDiE9m5_z0c-tNliUI')
       .expect(204);
 
     const blogsAtEnd = await bloghelper.blogsInDb();
@@ -188,6 +193,7 @@ describe('DELETE OPERATIONS', () => {
     const id = '5a3d5da59070081a82a3445';
     await api
       .get(`/api/blogs/${id}`)
+      .set('Authorization', 'bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IldvamNpZWNoQyIsImlkIjoiNjE0MWU2OWYwZjgxZTg4NTRmOTkxYTgzIiwiaWF0IjoxNjMxNzA5NTEzfQ.vgMTQKZvMHApQnlmGCS9OZAL0aDiE9m5_z0c-tNliUI')
       .expect(400);
   });
 
@@ -197,6 +203,7 @@ describe('DELETE OPERATIONS', () => {
 
     await api
       .get(`/api/blogs/${validNonexistingId}`)
+      .set('Authorization', 'bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IldvamNpZWNoQyIsImlkIjoiNjE0MWU2OWYwZjgxZTg4NTRmOTkxYTgzIiwiaWF0IjoxNjMxNzA5NTEzfQ.vgMTQKZvMHApQnlmGCS9OZAL0aDiE9m5_z0c-tNliUI')
       .expect(404);
   });
 });
@@ -214,6 +221,7 @@ describe('HTTP PUT', () => {
 
     await api
       .put(`/api/blogs/${blogToUpdate.id}`)
+      .set('Authorization', 'bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IldvamNpZWNoQyIsImlkIjoiNjE0MWU2OWYwZjgxZTg4NTRmOTkxYTgzIiwiaWF0IjoxNjMxNzA5NTEzfQ.vgMTQKZvMHApQnlmGCS9OZAL0aDiE9m5_z0c-tNliUI')
       .send(newBlog)
       .expect(200);
 
