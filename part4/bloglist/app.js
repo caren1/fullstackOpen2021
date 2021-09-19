@@ -7,10 +7,10 @@ const app = express();
 const cors = require('cors');
 const blogRouter = require('./controllers/blogs');
 const userRouter = require('./controllers/users');
+const loginRouter = require('./controllers/login');
 const middleware = require('./utils/middleware');
 const logger = require('./utils/logger');
 const mongoose = require('mongoose');
-const loginRouter = require('./controllers/login');
 
 logger.info('connecting to mongodb');
 mongoose.connect(config.MONGODB_URI, {

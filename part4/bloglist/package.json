@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "cross-env NODE_ENV=development nodemon index.js",
     "start": "cross-env NODE_ENV=production node index.js",
-    "lint": "eslint .",
+    "lint": "node_modules/.bin/eslint . --fix",
     "test": "cross-env NODE_ENV=test jest --verbose"
   },
   "author": "",
