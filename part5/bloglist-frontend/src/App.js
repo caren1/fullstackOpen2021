@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import Blog from './components/Blog'
+import BlogForm from './components/BlogForm'
 import LoginForm from './components/LoginForm'
 import blogService from './services/blogs'
 import loginService from './services/login'
@@ -21,6 +22,7 @@ const App = () => {
       })
       window.localStorage.setItem('bloglistUser', JSON.stringify(user));
       setUser(user);
+      blogService.setToken(user.token)
       setUsername('');
       setPassword('');
     } catch (exception) {
@@ -33,6 +35,7 @@ const App = () => {
   const onLogout = () => {
     window.localStorage.removeItem('bloglistUser');
     setUser(null);
+    
   }
 
   useEffect(() => {
@@ -46,6 +49,7 @@ const App = () => {
     if (loggedUser) {
       const parsedUser = JSON.parse(loggedUser);
       setUser(parsedUser);
+      blogService.setToken(parsedUser.token)
     }
   }, [])
 
@@ -67,6 +71,7 @@ const App = () => {
         <>
           <h2>blogs</h2>
           <p>{user.username} is logged in <button onClick={onLogout}>logout</button></p>
+          <BlogForm blogs={blogs} setBlogs={setBlogs} setError={setErrorMessage} />
           {blogs.map(blog =>
             <Blog key={blog.id} blog={blog} />
           )}

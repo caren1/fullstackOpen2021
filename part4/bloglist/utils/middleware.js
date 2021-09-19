@@ -37,14 +37,14 @@ const tokenExtractor = (request, response, next) => {
   next();
 };
 
-const userExtractor = (request, response, next) => {
+const userExtractor = async (request, response, next) => {
   const token = request.token;
   request.user = null;
   const decodedToken = jwt.verify(token, config.SECRET);
   if (!decodedToken.id) {
     response.status(400).json({ error: 'Invalid token.' });
   } else {
-    const user = User.findById(decodedToken.id);
+    const user = await User.findById(decodedToken.id);
     request.user = user;
   }
   next();
