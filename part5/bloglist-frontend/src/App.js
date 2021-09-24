@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import Blog from './components/Blog'
 import BlogForm from './components/BlogForm'
 import LoginForm from './components/LoginForm'
+import Togglable from './components/Togglable'
 import blogService from './services/blogs'
 import loginService from './services/login'
 
@@ -57,25 +58,32 @@ const App = () => {
     }
   }, [])
 
+  const loginFormRef = useRef();
+  const blogFormRef = useRef();
+
   return (
     <div>
       { notificationMessage !== null && notificationMessage }
       {user === null ? (
         <>
         <h1>Please log in to the application.</h1>
-          <LoginForm 
-          username={username}
-          password={password}
-          usernameHandler={onUsernameChange}
-          passwordHandler={onPasswordChange}
-          loginHandler={onLogin}
-          />
+        <Togglable buttonLabel="Want to log in?" ref={loginFormRef}>
+            <LoginForm 
+            username={username}
+            password={password}
+            usernameHandler={onUsernameChange}
+            passwordHandler={onPasswordChange}
+            loginHandler={onLogin}
+            />
+        </Togglable>
         </>
       ) : (
         <>
           <h2>blogs</h2>
           <p>{ user.name ? user.name : user.username } is logged in <button onClick={onLogout}>logout</button></p>
-          <BlogForm blogs={blogs} setBlogs={setBlogs} setNotification={setNotificationMessage} />
+          <Togglable buttonLabel="Want to add a new blog?" ref={blogFormRef}>
+            <BlogForm blogs={blogs} setBlogs={setBlogs} setNotification={setNotificationMessage} />
+          </Togglable>
           {blogs.map(blog =>
             <Blog key={blog.id} blog={blog} />
           )}

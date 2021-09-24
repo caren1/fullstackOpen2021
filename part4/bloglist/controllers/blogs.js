@@ -23,6 +23,7 @@ blogRouter.post('/', middleware.userExtractor, async (request, response) => {
   const body = request.body;
   // const token = request.token;
   const user = request.user;
+  //  below is first solution, commented due to userExtractor middleware addition that allows to extract the user from token
   // const token = getTokenFrom(request);
   // const decodedToken = jwt.verify(token, config.SECRET);
   // if (!token || !decodedToken.id){
