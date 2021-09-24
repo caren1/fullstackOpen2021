@@ -1,10 +1,16 @@
 const usersRouter = require('express').Router();
 const User = require('../models/users');
 const bcryptjs = require('bcryptjs');
+const middleware = require('../utils/middleware');
 
 usersRouter.get('/', async (request, response) => {
   const users = await User.find({}).populate('blogs');
   response.json(users);
+});
+
+usersRouter.get('/loggedUserInfo', middleware.userExtractor, async (request, response) => {
+  const user = request.user;
+  response.json(user);
 });
 
 usersRouter.get('/:id', async (request, response) => {
@@ -37,5 +43,7 @@ usersRouter.post('/', async (request, response) => {
   const savedUser = await user.save();
   response.json(savedUser);
 });
+
+
 
 module.exports = usersRouter;

@@ -5,6 +5,7 @@ const jwt = require('jsonwebtoken');
 const config = require('../utils/config');
 const middleware = require('../utils/middleware');
 
+
 blogRouter.get('/', async (request, response) => {
   const blogs = await Blog.find({}).populate('user', { username: 1,id: 1 });
   response.json(blogs.map((blog) => blog.toJSON()));
