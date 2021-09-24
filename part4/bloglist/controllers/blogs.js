@@ -64,10 +64,12 @@ blogRouter.delete('/:id', middleware.userExtractor, async (request, response) =>
   }
 });
 
-blogRouter.put('/:id', async (request, response) => {
+blogRouter.put('/:id', middleware.userExtractor, async (request, response) => {
+  const user = request.user;
 
   const newBlog = {
-    ...request.body
+    ...request.body,
+    user: user._id
   };
 
   const updatedBlog = await Blog.findByIdAndUpdate(request.params.id, newBlog, { new: true });

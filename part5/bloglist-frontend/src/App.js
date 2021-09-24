@@ -44,9 +44,11 @@ const App = () => {
   }
 
   useEffect(() => {
-    blogService.getAll().then(blogs =>
-      setBlogs( blogs )
-    )  
+    async function fetchBlogs () {
+      const response = await blogService.getAll()
+      setBlogs(response);
+    }
+    fetchBlogs();
   }, [])
 
   useEffect(() => {
@@ -60,6 +62,18 @@ const App = () => {
 
   const loginFormRef = useRef();
   const blogFormRef = useRef();
+
+  const onLikeUpdate = async (blogObject) => {
+    const newBlog = { ...blogObject, likes: blogObject.likes + 1 }
+
+    try {
+      const blogToUpdate = await blogService.update(newBlog);
+      setBlogs(blogs.map(blog => blog.id === blogToUpdate.id ? blogToUpdate : blog))
+      showNotification(`liked a ${blogObject.title}`, 5000);
+    } catch (exception) {
+      showNotification('Couldnt update the blog', 5000);
+    }
+  }
 
   return (
     <div>
@@ -85,7 +99,7 @@ const App = () => {
             <BlogForm blogs={blogs} setBlogs={setBlogs} setNotification={setNotificationMessage} />
           </Togglable>
           {blogs.map(blog =>
-            <Blog key={blog.id} blog={blog} />
+            <Blog key={blog.id} blog={blog} likeUpdateHandler={onLikeUpdate}/>
           )}
         </>
       )} 
