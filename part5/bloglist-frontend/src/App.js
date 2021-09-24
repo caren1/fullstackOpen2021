@@ -10,7 +10,7 @@ const App = () => {
   const [ username, setUsername ] = useState('');
   const [ password, setPassword ] = useState('');
   const [ user, setUser ] = useState(null);
-  const [ errorMessage, setErrorMessage ] = useState(null);
+  const [ notificationMessage, setNotificationMessage ] = useState(null);
 
   const onUsernameChange = (e) => setUsername(e.target.value);
   const onPasswordChange = (e) => setPassword(e.target.value);
@@ -23,19 +23,23 @@ const App = () => {
       window.localStorage.setItem('bloglistUser', JSON.stringify(user));
       setUser(user);
       blogService.setToken(user.token)
+      showNotification(`Successfully logged in ${user.username}`, 5000)
       setUsername('');
       setPassword('');
     } catch (exception) {
-      setErrorMessage('Invalid credentials.')
-      setTimeout(() => {
-        setErrorMessage(null)
-      }, 5000);
+      showNotification('Invalid credentials', 5000)
     }
   }
   const onLogout = () => {
     window.localStorage.removeItem('bloglistUser');
     setUser(null);
-    
+  }
+
+  const showNotification = (text, time) => {
+    setNotificationMessage(text)
+    setTimeout(() => {
+      setNotificationMessage(null)
+    }, time);
   }
 
   useEffect(() => {
@@ -55,7 +59,7 @@ const App = () => {
 
   return (
     <div>
-      { errorMessage !== null && errorMessage }
+      { notificationMessage !== null && notificationMessage }
       {user === null ? (
         <>
         <h1>Please log in to the application.</h1>
@@ -70,8 +74,8 @@ const App = () => {
       ) : (
         <>
           <h2>blogs</h2>
-          <p>{user.username} is logged in <button onClick={onLogout}>logout</button></p>
-          <BlogForm blogs={blogs} setBlogs={setBlogs} setError={setErrorMessage} />
+          <p>{ user.name ? user.name : user.username } is logged in <button onClick={onLogout}>logout</button></p>
+          <BlogForm blogs={blogs} setBlogs={setBlogs} setNotification={setNotificationMessage} />
           {blogs.map(blog =>
             <Blog key={blog.id} blog={blog} />
           )}

@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import blogService from '../services/blogs';
 
-const BlogForm = ({ blogs, setBlogs, setError }) => {
+const BlogForm = ({ blogs, setBlogs, setNotification }) => {
     const [ title, setTitle ] = useState('');
     const [ author, setAuthor ] = useState('');
     const [ url, setUrl ] = useState('');
@@ -14,11 +14,9 @@ const BlogForm = ({ blogs, setBlogs, setError }) => {
             setTitle('')
             setAuthor('')
             setUrl('');
+            setNotification(`Successfully added a blog ${title}, created by ${author}`)
         } catch (exception) {
-            setError('Couldnt add a blog')
-            setTimeout(() => {
-                setError('')
-            }, 5000);
+            setNotification('Couldnt add a blog', 5000)
         }
     }
 
